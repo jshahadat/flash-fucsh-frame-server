@@ -35,6 +35,7 @@ async function run() {
 
 
         const serviceCollection = client.db('crossFitCrew').collection('services');
+        const reviewsCollection = client.db('crossFitCrew').collection('reviews')
 
         app.post('jwt', (req, ser) => {
             const user = req.body;
@@ -63,6 +64,23 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.send(service);
         });
+
+
+        app.get('/reviews', async (req, res) => {
+            const query = {}
+            const cursor = reviewsCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        });
+
+
 
     }
     finally {
