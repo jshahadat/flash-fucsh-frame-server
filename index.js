@@ -87,18 +87,18 @@ async function run() {
 
 
 
-        app.get('/reviews', async (req, res) => {
-            let query = {};
+        // app.get('/reviews', async (req, res) => {
+        //     let query = {};
 
-            if (req.query.email) {
-                query = {
-                    email: req.query.email
-                }
-            }
-            const cursor = reviewsCollection.find(query);
-            const review = await cursor.toArray();
-            res.send(review);
-        });
+        //     if (req.query.email) {
+        //         query = {
+        //             email: req.query.email
+        //         }
+        //     }
+        //     const cursor = reviewsCollection.find(query);
+        //     const review = await cursor.toArray();
+        //     res.send(review);
+        // });
 
 
 
@@ -112,11 +112,47 @@ async function run() {
         });
 
 
+
+
+
+        // app.get('editreview/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const review = await reviewsCollection.findOne(query);
+        //     res.send(review);
+        // })
+
+
+
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
             res.send(result);
         });
+
+
+
+
+
+
+        app.put('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            const option = { upsert: true };
+            const updatedUser = {
+                $set: {
+                    name: user.name,
+                    address: user.address,
+                    email: user.email
+                }
+            }
+            const result = await reviewsCollection.updateOne(filter, updatedUser, option);
+            res.send(result);
+        })
+
+
+
 
 
         app.delete('/reviews/:id', async (req, res) => {
