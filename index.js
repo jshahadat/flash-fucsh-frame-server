@@ -113,8 +113,26 @@ async function run() {
 
 
 
+
+
+        app.get('/editreview/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const review = await reviewsCollection.findOne(query);
+            res.send(review);
+        });
+
+
+
+
+
+
         app.get('/reviews/:id', async (req, res) => {
-            const query = {}
+            // const query = {}
+            const id = req.params.id;
+            console.log(id);
+            const query = { serviceId: id };
+
             const cursor = reviewsCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
@@ -144,16 +162,18 @@ async function run() {
 
 
 
-        app.put('/reviews/:id', async (req, res) => {
+        app.put('/editreview/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const user = req.body;
+            console.log(user);
             const option = { upsert: true };
             const updatedUser = {
                 $set: {
                     name: user.name,
-                    address: user.address,
-                    email: user.email
+                    email: user.email,
+                    img: user.img,
+                    title: user.title
                 }
             }
             const result = await reviewsCollection.updateOne(filter, updatedUser, option);
