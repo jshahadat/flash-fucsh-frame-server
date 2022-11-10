@@ -53,6 +53,7 @@ async function run() {
         app.get('/service', async (req, res) => {
             const query = {}
             const cursor = serviceCollection.find(query);
+
             const services = await cursor.limit(3).toArray();
             res.send(services);
         });
@@ -104,7 +105,7 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = reviewsCollection.find(query);
+            const cursor = reviewsCollection.find(query).sort({ time: -1 });
             const review = await cursor.toArray();
             res.send(review);
         });
@@ -133,7 +134,7 @@ async function run() {
             console.log(id);
             const query = { serviceId: id };
 
-            const cursor = reviewsCollection.find(query);
+            const cursor = reviewsCollection.find(query).sort({ time: -1 });
             const reviews = await cursor.toArray();
             res.send(reviews);
         });
@@ -158,10 +159,6 @@ async function run() {
         });
 
 
-
-
-
-
         app.put('/editreview/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
@@ -181,17 +178,12 @@ async function run() {
         })
 
 
-
-
-
-        app.delete('/reviews/:id', async (req, res) => {
+        app.delete('/reviews/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await reviewsCollection.deleteOne(query);
             res.send(result);
         })
-
-
 
     }
     finally {
